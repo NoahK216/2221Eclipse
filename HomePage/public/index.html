@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<style type="text/css">
+			* {
+			  box-sizing: border-box;
+			}
+			
+			/* Create two equal columns that floats next to each other */
+			.column {
+			  float: left;
+			  width: 30%;
+			  padding: 10px;
+			  height: 300px; /* Should be removed. Only for demonstration */
+			}
+			
+			/* Clear floats after the columns */
+			.row:after {
+			  content: "";
+			  display: table;
+			  clear: both;
+			}
+			
+			table, th, td {
+			  border: 1px solid black;
+			  border-collapse: collapse;
+			}
+		</style>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<title>Noah's Page</title>
+	</head>
+
+	<body>
+        <h1 style="color:blue">Noah Klein's Home Page</h1>
+        <p>This is a cool picture of a cat with awesome sunglasses (I added a flipped version to make him look at himself)</p>
+        <p><img src="coolcat.png" alt="Cool cat"></img><img src="catflipped.png" alt="Cool cat"></img></p>
+        <div class="row">
+		  <div class="column">
+	        <a href="http://web.cse.ohio-state.edu/software/2221/web-sw1/schedule.html">CSE 2221 Schedule</a>
+	        
+	        <h3>Favorite Foods</h3>
+	        <ul>
+	          <li>Pizza</li>
+	          <li>Chick-fil-a Spicy Deluxe Sandwich</li>
+	          <li>Creamed Spinach</li>
+	          <li>Chicken Marsala</li>
+	        </ul>
+		  </div>
+		  
+		  <div class="column">
+		      <table>
+			  <tr>
+			    <th>Name</th>
+			    <th>School</th>
+			    <th>Hometown</th>
+			    <th>Major</th>
+			  </tr>
+			  <tr>
+			    <td>Noah Klein</td>
+			    <td>OSU</td>
+			    <td>Cuyahoga Falls</td>
+			    <td>Computer Science Engineer</td>
+			  </tr>
+			</table>
+		  </div>
+		</div>
+        
+
+	</body>
+</html>
