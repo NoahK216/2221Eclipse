@@ -7,7 +7,7 @@ import components.simplewriter.SimpleWriter1L;
 
 /**
  * Monte Carlo Estimate: compute percentage of pseudo-random points inside a
- * unit circle on a 2 by 2 plane
+ * unit circle on a 2 by 2 plane.
  */
 public final class MonteCarlo {
 
