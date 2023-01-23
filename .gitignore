@@ -2,7 +2,7 @@
 # Project specific excludes
 #
 
-
+.metadata
 
 #
 # Default excludes
@@ -26,6 +26,7 @@
 .settings/
 .classpath
 .project
+*.checkstyle
 
 # OS
 .DS_Store
