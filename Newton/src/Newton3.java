@@ -4,7 +4,10 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 
 /**
- * Put a short phrase describing the program here.
+ * Continually prompts user if they would like to calculate a square. If so,
+ * uses Newton's iterative square root calculating formula to calculate the
+ * given number's square root to within a user defined tolerance. Properly
+ * handles user input of 0.
  *
  * @author Noah Klein
  *
@@ -23,16 +26,17 @@ public final class Newton3 {
      * @param x
      *            positive number to compute square root of
      * @param tolerance
-     *            relative error
+     *            error to which square root will be calculated
      * @return estimate of square root
      */
     private static double sqrt(double x, double tolerance) {
         double root = x;
         double lastRoot = 0;
-
-        while (Math.abs(root - lastRoot) > tolerance) {
-            lastRoot = root;
-            root = (lastRoot + (x / lastRoot)) / 2;
+        if (x != 0) {
+            while (Math.abs(root - lastRoot) > tolerance) {
+                lastRoot = root;
+                root = (lastRoot + (x / lastRoot)) / 2;
+            }
         }
         return root;
     }
@@ -47,23 +51,26 @@ public final class Newton3 {
         SimpleReader in = new SimpleReader1L();
         SimpleWriter out = new SimpleWriter1L();
 
-        out.println("What relative tolerance would you like to calculate at:");
+        out.println("What error would you like to calculate to:");
         double tolerance = in.nextDouble();
         out.println("");
 
         boolean userContinue = true;
 
+        out.println("Would you like to compute a square root?");
+        userContinue = in.nextLine().equalsIgnoreCase("y");
+        out.println();
+
         while (userContinue) {
             out.println(
                     "What number would you like to find the square root of:");
             double x = in.nextDouble();
-
             out.println(sqrt(x, tolerance));
             out.println();
 
             out.println("Would you like to compute another square root?");
             userContinue = in.nextLine().equalsIgnoreCase("y");
-            out.println("");
+            out.println();
         }
 
         in.close();
