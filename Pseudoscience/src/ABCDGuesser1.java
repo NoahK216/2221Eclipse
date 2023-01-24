@@ -65,12 +65,6 @@ public final class ABCDGuesser1 {
         return result;
     }
 
-    private static double calculateJager(double w, double x, double y, double z,
-            double a, double b, double c, double d) {
-        return (Math.pow(w, a) * Math.pow(x, b) * Math.pow(y, c)
-                * Math.pow(z, d));
-    }
-
     /**
      * Main method.
      *
@@ -109,9 +103,10 @@ public final class ABCDGuesser1 {
 
                     for (int iterD = 0; iterD < arraySize; iterD++) {
 
-                        double currentApprox = calculateJager(w, x, y, z,
-                                constants[iterA], constants[iterB],
-                                constants[iterC], constants[iterD]);
+                        double currentApprox = (Math.pow(w, constants[iterA])
+                                * Math.pow(x, constants[iterB])
+                                * Math.pow(y, constants[iterC])
+                                * Math.pow(z, constants[iterD]));
 
                         if (Math.abs(targetConstant
                                 - currentApprox) < closestError) {
