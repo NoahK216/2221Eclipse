@@ -4,17 +4,18 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 
 /**
- * Put a short phrase describing the program here.
+ * Gives change by using as many of a denomination as possible before moving
+ * onto the next lowest value.
  *
- * @author Put your name here
+ * @author Noah Klein
  *
  */
-public final class ProgramWithIO {
+public final class CoinChange2 {
 
     /**
      * No argument constructor--private to prevent instantiation.
      */
-    private ProgramWithIO() {
+    private CoinChange2() {
     }
 
     /**
@@ -26,12 +27,22 @@ public final class ProgramWithIO {
     public static void main(String[] args) {
         SimpleReader in = new SimpleReader1L();
         SimpleWriter out = new SimpleWriter1L();
-        /*
-         * Put your main program code here
-         */
-        /*
-         * Close input and output streams
-         */
+
+        out.println("How many cents would you like change for:");
+        int change = in.nextInteger();
+
+        final int[] coinValues = { 100, 50, 25, 10, 5, 1 };
+        final String[] coinNames = { "Dollars", "Half Dollars", "Quarters",
+                "Dimes", "Nickles", "Pennies" };
+        int[] coinsReturned = new int[coinValues.length];
+
+        for (int i = 0; i < coinValues.length; i++) {
+            coinsReturned[i] = change / coinValues[i];
+            change = change % coinValues[i];
+
+            out.println(coinNames[i] + ": " + coinsReturned[i]);
+        }
+
         in.close();
         out.close();
     }
