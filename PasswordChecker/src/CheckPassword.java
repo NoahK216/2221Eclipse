@@ -26,9 +26,11 @@ public final class CheckPassword {
      */
     private static boolean containsUpperCaseLetter(String str) {
         boolean containsUpper = false;
-        for (int i = 0; i < str.length(); i++) {
+        int i = 0;
+        while (i < str.length() && !containsUpper) {
             containsUpper = containsUpper
                     || Character.isUpperCase(str.charAt(i));
+            i++;
         }
         return containsUpper;
     }
@@ -42,9 +44,11 @@ public final class CheckPassword {
      */
     private static boolean containsLowerCaseLetter(String str) {
         boolean containsLower = false;
-        for (int i = 0; i < str.length(); i++) {
+        int i = 0;
+        while (i < str.length() && !containsLower) {
             containsLower = containsLower
                     || Character.isLowerCase(str.charAt(i));
+            i++;
         }
         return containsLower;
     }
@@ -58,8 +62,10 @@ public final class CheckPassword {
      */
     private static boolean containsDigit(String str) {
         boolean containsDigit = false;
-        for (int i = 0; i < str.length(); i++) {
+        int i = 0;
+        while (i < str.length() && !containsDigit) {
             containsDigit = containsDigit || Character.isDigit(str.charAt(i));
+            i++;
         }
         return containsDigit;
     }
@@ -75,17 +81,29 @@ public final class CheckPassword {
      */
     private static void checkPassword(String passwordCandidate,
             SimpleWriter out) {
-        final int lengthRequirement = 8;
-        if (passwordCandidate.length() < lengthRequirement) {
-            out.println("Password must be at least 8 characters long");
-        } else if (!containsUpperCaseLetter(passwordCandidate)) {
-            out.println("Password must contain at least one upper case letter");
-        } else if (!containsLowerCaseLetter(passwordCandidate)) {
-            out.println("Password must contain at least one lower case letter");
-        } else if (!containsDigit(passwordCandidate)) {
-            out.println("Password must contain at least one digit");
-        } else {
+        final int lengthRequired = 8;
+        final int checksRequired = 3;
+
+        int checksPassed = 0;
+
+        if (passwordCandidate.length() >= lengthRequired) {
+            checksPassed++;
+        }
+        if (containsUpperCaseLetter(passwordCandidate)) {
+            checksPassed++;
+        }
+        if (containsLowerCaseLetter(passwordCandidate)) {
+            checksPassed++;
+        }
+        if (containsDigit(passwordCandidate)) {
+            checksPassed++;
+        }
+
+        if (checksPassed >= checksRequired) {
             out.println("Password is valid");
+        } else {
+            out.println("Password meets " + checksPassed + " out of "
+                    + checksRequired + " requirements");
         }
     }
 
@@ -101,7 +119,7 @@ public final class CheckPassword {
         /*
          * Put your main program code here; it may call myMethod as shown
          */
-        checkPassword("nnnnnnnnN9", out);
+        checkPassword("12345678", out);
         /*
          * Close input and output streams
          */
