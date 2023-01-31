@@ -5,9 +5,10 @@ import components.simplewriter.SimpleWriter1L;
 import components.utilities.FormatChecker;
 
 /**
- * Put a short phrase describing the program here.
+ * Generates a Hailstone series from a given positive integer, then prompts user
+ * if they would like to generate another.
  *
- * @author Put your name here
+ * @author Noah Klein
  *
  */
 public final class Hailstone5 {
@@ -30,11 +31,21 @@ public final class Hailstone5 {
      */
     private static int getPositiveInteger(SimpleReader in, SimpleWriter out) {
         String userIn = in.nextLine();
+        /*
+         * Enter the while loop if user input is not a positive, non-zero
+         * integer
+         */
         while (!FormatChecker.canParseInt(userIn)
                 || Integer.parseInt(userIn) <= 0) {
+            /*
+             * Prompt for and accept user input again
+             */
             out.println("Please input a positive integer");
             userIn = in.nextLine();
         }
+        /*
+         * Return user provided positive integer
+         */
         return Integer.parseInt(userIn);
     }
 
@@ -48,26 +59,44 @@ public final class Hailstone5 {
      *            the output stream
      */
     private static void generateSeries(int n, SimpleWriter out) {
+        /*
+         * Initialize variables used to keep track of series
+         */
         int hailstone = n;
+        int seriesMax = n;
         int seriesLen = 1;
-        int seriesMax = hailstone;
+
         out.println("Hailstone Series begining with " + hailstone + ":");
+
+        /*
+         * Hailstone series settle at 1 so end series when 1 is the current
+         * hailstone number
+         */
         while (hailstone != 1) {
             out.print(hailstone + ", ");
 
+            /*
+             * Hailstone series calculation
+             */
             if (hailstone % 2 == 0) {
                 hailstone = hailstone / 2;
             } else {
                 hailstone = (3 * hailstone) + 1;
             }
 
+            /*
+             * Change the series max if the current number is greater than the
+             * previous max
+             */
             if (hailstone > seriesMax) {
                 seriesMax = hailstone;
             }
 
             seriesLen++;
-
         }
+        /*
+         * Print the final hailstone number and the series length and max value
+         */
         out.println(hailstone);
         out.println("Series Length: " + seriesLen);
         out.println("Series Max: " + seriesMax);
