@@ -11,12 +11,12 @@ import components.utilities.FormatChecker;
  *
  * @author Noah Klein
  */
-public final class ABCDGuesser1 {
+public final class ABCDGuesser2 {
 
     /**
      * No argument constructor--private to prevent instantiation.
      */
-    private ABCDGuesser1() {
+    private ABCDGuesser2() {
         // no code needed here
     }
 
@@ -104,6 +104,29 @@ public final class ABCDGuesser1 {
     }
 
     /**
+     * Accepts two candidates and a target, outputs a true or false to indicate
+     * which of the candidates is closer.
+     *
+     * @param num1
+     *            first number to compare to target
+     * @param num2
+     *            second number to compare to target
+     * @param target
+     *            value num1 and num2 will be compared to
+     * @return true if difference between num1 and target is <= the difference
+     *         between num2 and target
+     */
+    private static boolean isCloser(double num1, double num2, double target) {
+        /*
+         * Calculate the errors of the two values from target
+         */
+        final double error1 = Math.abs(target - num1);
+        final double error2 = Math.abs(target - num2);
+
+        return (error1 <= error2);
+    }
+
+    /**
      * Main method.
      *
      * @param args
@@ -139,7 +162,6 @@ public final class ABCDGuesser1 {
          * as the individual exponents.
          */
         double closest = 0;
-        double closestError = targetConstant;
 
         double bestA = 0;
         double bestB = 0;
@@ -150,17 +172,13 @@ public final class ABCDGuesser1 {
          * Iterate through every possible 17^4 combinations of the exponent list
          * on the given personal numbers.
          */
-        int iterA = 0;
-        while (iterA < arraySize) {
+        for (int iterA = 0; iterA < arraySize; iterA++) {
 
-            int iterB = 0;
-            while (iterB < arraySize) {
+            for (int iterB = 0; iterB < arraySize; iterB++) {
 
-                int iterC = 0;
-                while (iterC < arraySize) {
+                for (int iterC = 0; iterC < arraySize; iterC++) {
 
-                    int iterD = 0;
-                    while (iterD < arraySize) {
+                    for (int iterD = 0; iterD < arraySize; iterD++) {
 
                         /*
                          * Calculate the value of the current exponents using
@@ -176,12 +194,8 @@ public final class ABCDGuesser1 {
                          * given physical constant update the variables that
                          * keep values.
                          */
-                        if (Math.abs(targetConstant
-                                - currentApprox) < closestError) {
-
+                        if (isCloser(currentApprox, closest, targetConstant)) {
                             closest = currentApprox;
-                            closestError = Math
-                                    .abs(currentApprox - targetConstant);
 
                             bestA = constants[iterA];
                             bestB = constants[iterB];
@@ -189,15 +203,11 @@ public final class ABCDGuesser1 {
                             bestD = constants[iterD];
 
                         }
-                        iterD++;
 
                     }
-                    iterC++;
 
                 }
-                iterB++;
             }
-            iterA++;
 
         }
 
