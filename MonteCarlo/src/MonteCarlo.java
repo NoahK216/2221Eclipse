@@ -6,62 +6,18 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 
 /**
- * Monte Carlo Estimate: compute percentage of pseudo-random points inside a
- * unit circle on a 2 by 2 plane.
+ * This program uses a user specified amount of points placed randomly on a
+ * plane to determine the area of a unit circle.
+ *
+ * @author Noah Klein
+ *
  */
 public final class MonteCarlo {
 
     /**
-     * Private constructor so this utility class cannot be instantiated.
+     * No argument constructor--private to prevent instantiation.
      */
     private MonteCarlo() {
-    }
-
-    /**
-     * Checks whether the given point (xCoord, yCoord) is inside the circle of
-     * radius 1.0 centered at the point (1.0, 1.0).
-     *
-     * @param xCoord
-     *            the x coordinate of the point
-     * @param yCoord
-     *            the y coordinate of the point`
-     * @return true if the point is inside the circle, false otherwise
-     */
-    private static boolean pointIsInCircle(double xCoord, double yCoord) {
-        return (Math.sqrt(
-                (xCoord - 1) * (xCoord - 1) + (yCoord - 1) * (yCoord - 1)) < 1);
-    }
-
-    /**
-     * Generates n pseudo-random points in the [0.0,2.0) x [0.0,2.0) square and
-     * returns the number that fall in the circle of radius 1.0 centered at the
-     * point (1.0, 1.0).
-     *
-     * @param n
-     *            the number of points to generate
-     * @return the number of points that fall in the circle
-     */
-    private static int numberOfPointsInCircle(int n) {
-        Random rnd = new Random1L();
-
-        int ptsInInterval = 0, ptsInSubinterval = 0;
-        /*
-         * Generate points and count how many fall in [0.0,0.5) interval
-         */
-        while (ptsInInterval < n) {
-            /*
-             * Generate coordinate pairs
-             */
-            double x = rnd.nextDouble();
-            double y = rnd.nextDouble();
-
-            ptsInInterval++;
-
-            if (pointIsInCircle(x, y)) {
-                ptsInSubinterval++;
-            }
-        }
-        return ptsInSubinterval;
     }
 
     /**
@@ -71,26 +27,71 @@ public final class MonteCarlo {
      *            the command line arguments; unused here
      */
     public static void main(String[] args) {
-        SimpleReader input = new SimpleReader1L();
-        SimpleWriter output = new SimpleWriter1L();
         /*
-         * Ask user for number of points to generate
+         * IO Library instantiations
          */
-        output.print("Number of points: ");
-        int n = input.nextInteger();
-        /*
-         * Declare counters and initialize them
-         */
-        int inCircle = numberOfPointsInCircle(n);
+        SimpleReader in = new SimpleReader1L();
+        SimpleWriter out = new SimpleWriter1L();
 
-        final double squareArea = 4.0;
-        double estimatedArea = (squareArea * inCircle) / n;
-        output.println("Estimated area of unit circle: " + estimatedArea);
+        /*
+         * Get user input that determines how many points will be placed
+         */
+        out.print("Number of points: ");
+        int n = in.nextInteger();
+
+        /*
+         * ptsInInterval keeps track of how many points have been checked, while
+         * ptsInSubInterval keeps track of how many of these points land within
+         * our circle
+         */
+        int ptsInInterval = 0, ptsInSubinterval = 0;
+
+        Random rnd = new Random1L();
+
+        /*
+         * Place and calculate a points positions however many times the user
+         * specified.
+         */
+        while (ptsInInterval < n) {
+            /*
+             * Generate a coordinate for x and y between [0,2)
+             */
+            double x = rnd.nextDouble() * 2;
+            double y = rnd.nextDouble() * 2;
+
+            ptsInInterval++;
+            /*
+             * Use the distance formula to determine if the generated points are
+             * outside of a circle with radius 1, located at (1,1)
+             */
+            if (Math.sqrt((x - 1) * (x - 1) + (y - 1) * (y - 1)) <= 1) {
+                ptsInSubinterval++;
+            }
+        }
+
+        /*
+         * Calculate what percentage of tested points landed inside of the
+         * circle
+         */
+        double percentHit = (double) ptsInSubinterval / ptsInInterval;
+
+        /*
+         * Since the possible coordinates our points could land on were [0,2)
+         * for both x and y, The total area they could land in is 4 units large
+         *
+         * Multiplying the percent of points that landed inside of the circle by
+         * the area of the overall grid should give us a good estimate of the
+         * area of the circle
+         */
+        final double gridArea = 4.0;
+        double estimate = percentHit * gridArea;
+        out.println("Estimated area of circle with radius 1: " + estimate);
+
         /*
          * Close input and output streams
          */
-        input.close();
-        output.close();
+        in.close();
+        out.close();
     }
 
 }
