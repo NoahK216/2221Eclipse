@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import components.simplereader.SimpleReader;
 import components.simplereader.SimpleReader1L;
 import components.simplewriter.SimpleWriter;
@@ -76,50 +80,47 @@ public final class RSSProcessing {
         assert item.isTag() && item.label().equals("item") : ""
                 + "Violation of: the label root of item is an <item> tag";
         assert out.isOpen() : "Violation of: out.is_open";
-        /*
-         * TODO: #3 - fill in body
-         */
+
+        if (getChildElement(item, "title") != -1) {
+
+        }
 
     }
 
     /**
-     * Finds the first occurrence of the given tag among the children of the
-     * given {@code XMLTree} and returns
+     * ADD A DESCRIPTION.
      *
-     * @param xml
-     *            the {@code XMLTree} to search
-     * @param tag
-     *            the tag to look for
-     * @return the label of the first child of the {@code XMLTree} matching the
-     *         given tag or a String indicating otherwise if not found
-     * @requires [the label of the root of xml is a tag and the child with the
-     *           given tag has 1 or 0 children]
-     * @ensures <pre>
-     * getChildElement =
-     *  [the label of the first child of the {@code XMLTree} matching the
-     *   given tag] or [tag + "was not found"] if not found
-     * </pre>
+     * @param line
+     *            line to be concatenated
+     * @ensures newLine = [line + "\n"]
+     *
+     * @return [line + "\n"]
      */
-    private static String getChildLabel(XMLTree xml, String tag) {
-        assert xml != null : "Violation of: xml is not null";
-        assert tag != null : "Violation of: tag is not null";
-        assert xml.isTag() : "Violation of: the label root of xml is a tag";
+    private static String newLine(String line) {
+        return (line + "\n");
+    }
 
-        final int xmlChildren = xml.numberOfChildren();
-        boolean found = false;
-        String childLabel = tag + " not found";
+    /**
+     * Creates file at specified directory with given String of contents.
+     *
+     * @param fileName
+     *            path for file to be created including extension
+     * @param contents
+     *            String to be written into fileName
+     * @requires [fileName must not have any characters invalid for fileName or
+     *           spaces]
+     * @ensures file with name fileName will be created at the base directory of
+     *          this project filled with contents
+     */
+    private static void writeToFile(String fileName, String contents) {
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter(fileName))) {
+            writer.write(contents);
+            writer.close();
 
-        int i = 0;
-        while (i < xmlChildren && !found) {
-            if (xml.child(i).label().equals(tag)
-                    && xml.child(i).numberOfChildren() == 1) {
-                childLabel = xml.child(i).child(0).label();
-                found = true;
-            }
-            i++;
+        } catch (IOException error) {
+            error.printStackTrace();
         }
-
-        return childLabel;
     }
 
     /**
@@ -150,14 +151,18 @@ public final class RSSProcessing {
          */
         XMLTree channel = xml.child(0);
 
-        out.println("Title: " + getChildLabel(channel, "title"));
-        out.println("Link: " + getChildLabel(channel, "link"));
-        out.println("Description: " + getChildLabel(channel, "description"));
+        String output = newLine("Very funny");
+        output += newLine("balling");
 
-        /*
+        /*-
          * TODO: #4 - for each item, output title (or description, if title is
          * not available) and link (if available)
          */
+
+        /*
+         * Write final output to output.html
+         */
+        writeToFile("output.html", output);
 
         /*
          * Close I/O streams.
