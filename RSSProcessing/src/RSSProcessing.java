@@ -1,7 +1,3 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import components.simplereader.SimpleReader;
 import components.simplereader.SimpleReader1L;
 import components.simplewriter.SimpleWriter;
@@ -13,7 +9,7 @@ import components.xmltree.XMLTree1;
  * This program inputs an XML RSS (version 2.0) feed from a given URL and
  * outputs various elements of the feed to the console.
  *
- * @author Put your name here
+ * @author Noah Klein
  *
  */
 public final class RSSProcessing {
@@ -22,33 +18,6 @@ public final class RSSProcessing {
      * Private constructor so this utility class cannot be instantiated.
      */
     private RSSProcessing() {
-    }
-
-    /**
-     * Creates file at specified directory with given String of contents.
-     *
-     * @param fileName
-     *            path for file to be created including extension
-     * @param contents
-     *            String to be written into fileName
-     * @param append
-     *            false if you would like to overwrite any existing text in the
-     *            file, true to append
-     * @requires [fileName must not have any characters invalid for fileName or
-     *           spaces]
-     * @ensures file with name fileName will be created at the base directory of
-     *          this project filled with contents
-     */
-    private static void writeToFile(String fileName, String contents,
-            boolean append) {
-        try (BufferedWriter writer = new BufferedWriter(
-                new FileWriter(fileName, append))) {
-            writer.append(contents);
-            writer.close();
-
-        } catch (IOException error) {
-            error.printStackTrace();
-        }
     }
 
     /**
@@ -112,7 +81,7 @@ public final class RSSProcessing {
          * If title is present in the item populate the "News" column with it,
          * otherwise populate it with the item's description
          */
-        String news = "No title or description avaliable";
+        String news = "No title available";
         if (getChildElement(item, "title") != -1) {
             XMLTree titleTree = item.child(getChildElement(item, "title"));
             if (titleTree.numberOfChildren() == 1) {
@@ -126,10 +95,10 @@ public final class RSSProcessing {
             }
         }
 
-        String newsLink = "";
         if (getChildElement(item, "link") != -1) {
-            newsLink = item.child(getChildElement(item, "link")).child(0)
-                    .label();
+            XMLTree linkTree = item.child(getChildElement(item, "link"));
+            news = "<a href=\"" + linkTree.child(0).label() + "\">" + news
+                    + "</a>";
         }
 
         String source = "No source available";
@@ -137,43 +106,24 @@ public final class RSSProcessing {
         if (getChildElement(item, "source") != -1) {
             XMLTree sourceTree = item.child(getChildElement(item, "source"));
             sourceLink = sourceTree.attributeValue("url");
+
             if (sourceTree.numberOfChildren() == 1) {
                 source = sourceTree.child(0).label();
             }
-
+            source = "<a href=\"" + sourceLink + "\">" + source + "</a>";
         }
 
-        String pubDate = "";
+        String pubDate = "No date available";
         if (getChildElement(item, "pubDate") != -1) {
             pubDate = item.child(getChildElement(item, "pubDate")).child(0)
                     .label();
         }
 
         String htmlRow = ("  <tr>\n" + "   <td>" + pubDate + "</td>\n"
-                + "   <td><a href=\"" + sourceLink + "\">" + source
-                + "</a></td>\n" + "   <td><a href=\"" + newsLink + "\">" + news
-                + "</a></td>\n" + "  </tr>\n");
+                + "   <td>" + source + "</td>\n" + "   <td>" + news + "</td>\n"
+                + "  </tr>\n");
 
-        writeToFile("output.html", htmlRow, true);
-    }
-
-    /**
-     * ADD A DESCRIPTION.
-     *
-     * @param line
-     *            line to be concatenated
-     * @ensures newLine = [line + "\n"]
-     *
-     * @return [line + "\n"]
-     */
-    private static String htmlHeader(String title, String titleLink,
-            String description) {
-        return ("<html>\n" + "<head>\n" + "<title>" + title + "</title>\n"
-                + "</head>\n" + "<body>\n" + " <h1><a href=\"" + titleLink
-                + "\">" + title + "</a></h1>\n" + " <p>" + description
-                + "</p>\n" + "<table border=\"1\">" + "\n" + "  <tr>\n"
-                + "   <th>Date</th>\n" + "   <th>Source</th>\n"
-                + "   <th>News</th>\n" + "  </tr>\n");
+        out.print(htmlRow);
     }
 
     /**
@@ -188,66 +138,107 @@ public final class RSSProcessing {
          */
         SimpleReader in = new SimpleReader1L();
         SimpleWriter out = new SimpleWriter1L();
+
         /*
-         * Input the source URL.
+         * Request and store XML URL.
          */
         out.print("Enter the URL of an RSS 2.0 news feed: ");
         String url = in.nextLine();
+
         /*
          * Read XML input and initialize XMLTree. If input is not legal XML,
          * this statement will fail.
          */
-
         XMLTree xml = new XMLTree1(url);
-        /*
-         * Extract <channel> element.
-         */
-        XMLTree channel = xml.child(0);
-
-        String link = channel.child(getChildElement(channel, "link")).child(0)
-                .label();
-
-        String title = "No title avaliable";
-        if (channel.child(getChildElement(channel, "title"))
-                .numberOfChildren() == 1) {
-            title = channel.child(getChildElement(channel, "title")).child(0)
-                    .label();
-        }
-
-        String description = "No description avaliable";
-        if (channel.child(getChildElement(channel, "description"))
-                .numberOfChildren() == 1) {
-            description = channel.child(getChildElement(channel, "description"))
-                    .child(0).label();
-        }
 
         /*
-         * Begin html file with necessary tags and first table header, overwrite
-         * any existing files.
+         * Ensure given XML document is an RSS 2.0 feed
          */
-        writeToFile("output.html", htmlHeader(title, link, description), false);
-
-        /*
-         * Ensure that the RSS feed has an item before processing them
-         */
-        if (getChildElement(channel, "item") != -1) {
+        if (xml.hasAttribute("version")
+                && xml.attributeValue("version").equals("2.0")) {
             /*
-             * Search through all children of channel as there is no guaranteed
-             * order
+             * Request and store filename for output, then create a SimpleWriter
+             * object at that directory.
+             */
+            out.print("Enter the name of your html output "
+                    + "(do not include the file extension): ");
+            String htmlDestination = in.nextLine() + ".html";
+            SimpleWriter htmlOut = new SimpleWriter1L(htmlDestination);
+
+            /*
+             * Extract <channel> element.
+             */
+            XMLTree channel = xml.child(0);
+
+            /*
+             * A tag and label node are both required so there is no check
+             * needed to save the link
+             */
+            String link = channel.child(getChildElement(channel, "link"))
+                    .child(0).label();
+
+            /*
+             * Check for title child and if it does not exist displayed title
+             * will be "No title available"
+             */
+            String title = "No title available";
+            if (channel.child(getChildElement(channel, "title"))
+                    .numberOfChildren() == 1) {
+                title = channel.child(getChildElement(channel, "title"))
+                        .child(0).label();
+            }
+
+            /*
+             * Check for description child and if it does not exist displayed
+             * description will be "No description available"
+             */
+            String description = "No description available";
+            if (channel.child(getChildElement(channel, "description"))
+                    .numberOfChildren() == 1) {
+                description = channel
+                        .child(getChildElement(channel, "description")).child(0)
+                        .label();
+            }
+
+            /*
+             * Begin HTML file with necessary tags and first table header
+             */
+            String htmlHeader = "<html>\n" + "<head>\n" + "<title>" + title
+                    + "</title>\n" + "</head>\n" + "<body>\n"
+                    + " <h1><a href=\"" + link + "\">" + title + "</a></h1>\n"
+                    + " <p>" + description + "</p>\n" + "<table border=\"1\">"
+                    + "\n" + "  <tr>\n" + "   <th>Date</th>\n"
+                    + "   <th>Source</th>\n" + "   <th>News</th>\n"
+                    + "  </tr>\n";
+            htmlOut.print(htmlHeader);
+
+            /*
+             * Search through all children of channel to find items as there is
+             * no guaranteed order
              */
             for (int i = 0; i < channel.numberOfChildren(); i++) {
+                /*
+                 * If current node is <item> process it and output its contents
+                 * to the HTML
+                 */
                 if (channel.child(i).label().equals("item")) {
-                    processItem(channel.child(i), out);
+                    processItem(channel.child(i), htmlOut);
                 }
             }
 
-        }
+            /*
+             * Close initial HTML tags and then the writer
+             */
+            htmlOut.print("</table>\n</body>\n</html>");
+            htmlOut.close();
 
-        /*
-         * Close initial HTML tags
-         */
-        writeToFile("output.html", "</table>\n" + "</body>\n" + "</html>",
-                true);
+            /*
+             * Inform user that the program has completed
+             */
+            out.println("RSS parsed and output at " + htmlDestination);
+        } else {
+            out.println("Not a valid RSS 2.0 feed");
+        }
 
         /*
          * Close I/O streams.
