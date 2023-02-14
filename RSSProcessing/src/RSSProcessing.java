@@ -82,34 +82,48 @@ public final class RSSProcessing {
          * otherwise populate it with the item's description
          */
         String news = "No title available";
-        if (getChildElement(item, "title") != -1) {
-            XMLTree titleTree = item.child(getChildElement(item, "title"));
-            if (titleTree.numberOfChildren() == 1) {
-                news = titleTree.child(0).label();
-            }
+        int titleIndex = getChildElement(item, "title");
+        if (titleIndex != -1
+                && item.child(titleIndex).numberOfChildren() == 1) {
+            news = item.child(titleIndex).child(0).label();
         } else {
-            XMLTree descriptionTree = item
-                    .child(getChildElement(item, "description"));
-            if (descriptionTree.numberOfChildren() == 1) {
-                news = descriptionTree.child(0).label();
-            }
+            int descriptionIndex = getChildElement(item, "description");
+            news = item.child(descriptionIndex).child(0).label();
         }
 
+        /*
+         * If link is present in the given in the item it must have a child
+         */
         if (getChildElement(item, "link") != -1) {
             XMLTree linkTree = item.child(getChildElement(item, "link"));
+            /*
+             * Only add href tags if link is present in order to not have empty
+             * hyperlinks in the table
+             */
             news = "<a href=\"" + linkTree.child(0).label() + "\">" + news
                     + "</a>";
         }
 
+        /*
+         * Check for link to source's site
+         */
         String source = "No source available";
         String sourceLink = "";
         if (getChildElement(item, "source") != -1) {
             XMLTree sourceTree = item.child(getChildElement(item, "source"));
+            /*
+             * If source exists a "url" attribute is guaranteed
+             */
             sourceLink = sourceTree.attributeValue("url");
 
             if (sourceTree.numberOfChildren() == 1) {
                 source = sourceTree.child(0).label();
             }
+
+            /*
+             * Only add href tags if source is present in order to not have
+             * empty hyperlinks in the table
+             */
             source = "<a href=\"" + sourceLink + "\">" + source + "</a>";
         }
 
