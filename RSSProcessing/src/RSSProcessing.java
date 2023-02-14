@@ -42,11 +42,24 @@ public final class RSSProcessing {
         assert tag != null : "Violation of: tag is not null";
         assert xml.isTag() : "Violation of: the label root of xml is a tag";
 
+        /*
+         * Store number of children and create a variable to hold the index of
+         * the first child. This value is set to -1 so that if no child is found
+         * -1 will be returned.
+         */
         final int xmlChildren = xml.numberOfChildren();
         int indexOfElement = -1;
 
+        /*
+         * Cycle through all children of given XML tree until either there are
+         * none left or the child with a given tag has been found.
+         */
         int i = 0;
         while (i < xmlChildren && indexOfElement == -1) {
+            /*
+             * Set indexOfElement to the index of current child if it has the
+             * required tag.
+             */
             if (xml.child(i).label().equals(tag)) {
                 indexOfElement = i;
             }
@@ -95,34 +108,64 @@ public final class RSSProcessing {
             }
         }
 
+        /*
+         * Update the news column to include a hyperlink if one is present in
+         * the item.
+         */
         if (getChildElement(item, "link") != -1) {
             XMLTree linkTree = item.child(getChildElement(item, "link"));
             news = "<a href=\"" + linkTree.child(0).label() + "\">" + news
                     + "</a>";
         }
 
+        /*
+         * Check first if a child with label source exists. If one does it is
+         * guaranteed to have an attribute named url.
+         */
         String source = "No source available";
         String sourceLink = "";
         if (getChildElement(item, "source") != -1) {
             XMLTree sourceTree = item.child(getChildElement(item, "source"));
             sourceLink = sourceTree.attributeValue("url");
 
+            /*
+             * Check if the listed source has a name to be displayed. If not,
+             * display a message indicate that there is a source but no name.
+             */
             if (sourceTree.numberOfChildren() == 1) {
                 source = sourceTree.child(0).label();
+            } else {
+                source = "No title available";
             }
+
+            /*
+             * Format the source so that the earlier hyperlink will be used
+             * instead of plain text.
+             */
             source = "<a href=\"" + sourceLink + "\">" + source + "</a>";
         }
 
+        /*
+         * Initialize the final column and to indicate no date available and
+         * then update it to the provided date if there is one.
+         */
         String pubDate = "No date available";
         if (getChildElement(item, "pubDate") != -1) {
             pubDate = item.child(getChildElement(item, "pubDate")).child(0)
                     .label();
         }
 
-        String htmlRow = ("  <tr>\n" + "   <td>" + pubDate + "</td>\n"
-                + "   <td>" + source + "</td>\n" + "   <td>" + news + "</td>\n"
-                + "  </tr>\n");
+        /*
+         * Format all of the above into a single 3 wide row comprised of valid
+         * HTML.
+         */
+        String htmlRow = ("    <tr>\n" + "       <td>" + pubDate + "</td>\n"
+                + "       <td>" + source + "</td>\n" + "       <td>" + news
+                + "</td>\n" + "    </tr>\n");
 
+        /*
+         * Write this table to the given file.
+         */
         out.print(htmlRow);
     }
 
@@ -201,15 +244,16 @@ public final class RSSProcessing {
             }
 
             /*
-             * Begin HTML file with necessary tags and first table header
+             * Begin HTML file with necessary tags and first table header.
+             * Indents 2 spaces wide.
              */
-            String htmlHeader = "<html>\n" + "<head>\n" + "<title>" + title
+            String htmlHeader = "<html>\n" + "<head>\n" + "  <title>" + title
                     + "</title>\n" + "</head>\n" + "<body>\n"
-                    + " <h1><a href=\"" + link + "\">" + title + "</a></h1>\n"
-                    + " <p>" + description + "</p>\n" + "<table border=\"1\">"
-                    + "\n" + "  <tr>\n" + "   <th>Date</th>\n"
-                    + "   <th>Source</th>\n" + "   <th>News</th>\n"
-                    + "  </tr>\n";
+                    + "  <h1><a href=\"" + link + "\">" + title + "</a></h1>\n"
+                    + "  <p>" + description + "</p>\n"
+                    + "  <table border=\"1\">" + "\n" + "    <tr>\n"
+                    + "      <th>Date</th>\n" + "      <th>Source</th>\n"
+                    + "      <th>News</th>\n" + "    </tr>\n";
             htmlOut.print(htmlHeader);
 
             /*
@@ -229,7 +273,7 @@ public final class RSSProcessing {
             /*
              * Close initial HTML tags and then the writer
              */
-            htmlOut.print("</table>\n</body>\n</html>");
+            htmlOut.print("  </table>\n</body>\n</html>");
             htmlOut.close();
 
             /*
