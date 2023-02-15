@@ -95,37 +95,48 @@ public final class RSSProcessing {
          * otherwise populate it with the item's description
          */
         String news = "No title available";
-        if (getChildElement(item, "title") != -1) {
-            XMLTree titleTree = item.child(getChildElement(item, "title"));
-            if (titleTree.numberOfChildren() == 1) {
-                news = titleTree.child(0).label();
-            }
+        int titleIndex = getChildElement(item, "title");
+        if (titleIndex != -1
+                && item.child(titleIndex).numberOfChildren() == 1) {
+            news = item.child(titleIndex).child(0).label();
         } else {
-            XMLTree descriptionTree = item
-                    .child(getChildElement(item, "description"));
-            if (descriptionTree.numberOfChildren() == 1) {
-                news = descriptionTree.child(0).label();
-            }
+            int descriptionIndex = getChildElement(item, "description");
+            news = item.child(descriptionIndex).child(0).label();
         }
 
         /*
+<<<<<<< HEAD
          * Update the news column to include a hyperlink if one is present in
          * the item.
+=======
+         * If link is present in the given in the item it must have a child
+>>>>>>> f830b27188df5abab293a18b88afe4c6a27fff18
          */
         if (getChildElement(item, "link") != -1) {
             XMLTree linkTree = item.child(getChildElement(item, "link"));
+            /*
+             * Only add href tags if link is present in order to not have empty
+             * hyperlinks in the table
+             */
             news = "<a href=\"" + linkTree.child(0).label() + "\">" + news
                     + "</a>";
         }
 
         /*
+<<<<<<< HEAD
          * Check first if a child with label source exists. If one does it is
          * guaranteed to have an attribute named url.
+=======
+         * Check for link to source's site
+>>>>>>> f830b27188df5abab293a18b88afe4c6a27fff18
          */
         String source = "No source available";
         String sourceLink = "";
         if (getChildElement(item, "source") != -1) {
             XMLTree sourceTree = item.child(getChildElement(item, "source"));
+            /*
+             * If source exists a "url" attribute is guaranteed
+             */
             sourceLink = sourceTree.attributeValue("url");
 
             /*
@@ -139,8 +150,13 @@ public final class RSSProcessing {
             }
 
             /*
+<<<<<<< HEAD
              * Format the source so that the earlier hyperlink will be used
              * instead of plain text.
+=======
+             * Only add href tags if source is present in order to not have
+             * empty hyperlinks in the table
+>>>>>>> f830b27188df5abab293a18b88afe4c6a27fff18
              */
             source = "<a href=\"" + sourceLink + "\">" + source + "</a>";
         }
