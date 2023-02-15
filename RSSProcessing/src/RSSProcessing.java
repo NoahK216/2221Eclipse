@@ -105,12 +105,9 @@ public final class RSSProcessing {
         }
 
         /*
-<<<<<<< HEAD
          * Update the news column to include a hyperlink if one is present in
-         * the item.
-=======
-         * If link is present in the given in the item it must have a child
->>>>>>> f830b27188df5abab293a18b88afe4c6a27fff18
+         * the item. If link is present in the given in the item it must have a
+         * child
          */
         if (getChildElement(item, "link") != -1) {
             XMLTree linkTree = item.child(getChildElement(item, "link"));
@@ -123,12 +120,9 @@ public final class RSSProcessing {
         }
 
         /*
-<<<<<<< HEAD
          * Check first if a child with label source exists. If one does it is
-         * guaranteed to have an attribute named url.
-=======
-         * Check for link to source's site
->>>>>>> f830b27188df5abab293a18b88afe4c6a27fff18
+         * guaranteed to have an attribute named url. Check for link to source's
+         * site
          */
         String source = "No source available";
         String sourceLink = "";
@@ -150,13 +144,9 @@ public final class RSSProcessing {
             }
 
             /*
-<<<<<<< HEAD
              * Format the source so that the earlier hyperlink will be used
-             * instead of plain text.
-=======
-             * Only add href tags if source is present in order to not have
-             * empty hyperlinks in the table
->>>>>>> f830b27188df5abab293a18b88afe4c6a27fff18
+             * instead of plain text. Only add href tags if source is present in
+             * order to not have empty hyperlinks in the table
              */
             source = "<a href=\"" + sourceLink + "\">" + source + "</a>";
         }
