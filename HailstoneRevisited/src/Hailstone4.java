@@ -11,12 +11,12 @@ import components.simplewriter.SimpleWriter1L;
  * @author Noah Klein
  *
  */
-public final class Hailstone1 {
+public final class Hailstone4 {
 
     /**
      * No argument constructor--private to prevent instantiation.
      */
-    private Hailstone1() {
+    private Hailstone4() {
     }
 
     /**
@@ -33,7 +33,10 @@ public final class Hailstone1 {
      *          n]
      */
     private static void generateSeries(NaturalNumber n, SimpleWriter out) {
+        NaturalNumber initialN = new NaturalNumber2(n);
         NaturalNumber hailstone = new NaturalNumber2(n);
+        NaturalNumber seriesMax = new NaturalNumber2(n);
+        int seriesLen = 1;
 
         NaturalNumber naturalOne = new NaturalNumber2(1);
         NaturalNumber naturalTwo = new NaturalNumber2(2);
@@ -42,14 +45,25 @@ public final class Hailstone1 {
         while (!hailstone.equals(naturalOne)) {
             out.print(hailstone + ", ");
 
-            NaturalNumber preDivision = new NaturalNumber2(hailstone);
-            if (hailstone.divide(naturalTwo).equals(naturalOne)) {
-                hailstone.copyFrom(preDivision);
+            NaturalNumber remainder = new NaturalNumber2(hailstone)
+                    .divide(naturalTwo);
+
+            if (remainder.isZero()) {
+                hailstone.divide(naturalTwo);
+            } else {
                 hailstone.multiply(naturalThree);
                 hailstone.increment();
             }
+
+            if (hailstone.compareTo(seriesMax) > 0) {
+                seriesMax.copyFrom(hailstone);
+            }
+
+            seriesLen++;
         }
         out.println(hailstone);
+        out.println("Series Length: " + seriesLen);
+        out.println("Series Max: " + seriesMax);
     }
 
     /**
