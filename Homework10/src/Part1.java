@@ -1,5 +1,3 @@
-import components.naturalnumber.NaturalNumber;
-import components.naturalnumber.NaturalNumber2;
 import components.simplereader.SimpleReader;
 import components.simplereader.SimpleReader1L;
 import components.simplewriter.SimpleWriter;
@@ -20,20 +18,35 @@ public final class Part1 {
     }
 
     /**
-     * Swaps the two given {@code NaturalNumber}s.
+     * Returns the {@code r}-th root of {@code n}.
      *
-     * @param n1
-     *            the first {@code NaturalNumber}
-     * @param n2
-     *            the second {@code NaturalNumber}
-     * @updates n1
-     * @updates n2
-     * @ensures n1 = #n2 and n2 = #n1
+     * @param n
+     *            the number to which we want to apply the root
+     * @param r
+     *            the root
+     * @return the root of the number
+     * @requires n >= 0 and r > 0
+     * @ensures root ^ (r) <= n < (root + 1) ^ (r)
      */
-    private static void swapNN(NaturalNumber n1, NaturalNumber n2) {
-        NaturalNumber temp = new NaturalNumber2(n1);
-        n1.copyFrom(n2);
-        n2.copyFrom(temp);
+    private static int root(int n, int r) {
+        int lowerBounds = 0;
+        int upperBounds = n;
+
+        int middle = (lowerBounds + upperBounds) / 2;
+
+        while (lowerBounds != middle) {
+            int risen = (int) Math.pow(middle, r);
+
+            if (risen < n) {
+                lowerBounds = middle;
+            } else {
+                upperBounds = middle;
+            }
+
+            middle = (lowerBounds + upperBounds) / 2;
+        }
+
+        return lowerBounds;
     }
 
     /**
@@ -46,16 +59,13 @@ public final class Part1 {
         SimpleReader in = new SimpleReader1L();
         SimpleWriter out = new SimpleWriter1L();
 
-        NaturalNumber foo = new NaturalNumber2(0);
-        NaturalNumber bar = new NaturalNumber2(10);
+        final int n = 654651111;
+        final int r = 2;
 
-        out.println(foo + ", " + bar);
-        swapNN(foo, bar);
-        out.println(foo + ", " + bar);
+        out.println((int) (Math.log(n) / Math.log(2)));
 
-        /*
-         * Close input and output streams
-         */
+        out.println(root(n, r));
+
         in.close();
         out.close();
     }
