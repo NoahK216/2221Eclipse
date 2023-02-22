@@ -7,18 +7,18 @@ import components.xmltree.XMLTree1;
 import components.xmltree.XMLTree2;
 
 /**
- * This program inputs an XML RSS (version 2.0) feed from a given URL and
- * outputs various elements of the feed to the console.
+ * This program inputs an XML RSS (version 2.0) feeds from a given URL and
+ * outputs various elements of the feeds to the console.
  *
  * @author Noah Klein
  *
  */
-public final class RSSProcessing {
+public final class RSSAggregator {
 
     /**
      * Private constructor so this utility class cannot be instantiated.
      */
-    private RSSProcessing() {
+    private RSSAggregator() {
     }
 
     /**
@@ -177,11 +177,11 @@ public final class RSSProcessing {
     }
 
     /**
-     * Processes one XML RSS (version 2.0) feed from a given URL converting it
+     * Processes one XML RSS (version 2.0) feeds from a given URL converting it
      * into the corresponding HTML output file.
      *
      * @param url
-     *            the URL of the RSS feed
+     *            the URL of the RSS feeds
      * @param file
      *            the name of the HTML output file
      * @param out
@@ -189,14 +189,14 @@ public final class RSSProcessing {
      * @updates out.content
      * @requires out.is_open
      * @ensures <pre>
-     * [reads RSS feed from url, saves HTML document with table of news items
+     * [reads RSS feeds from url, saves HTML document with table of news items
      *   to file, appends to out.content any needed messages]
      * </pre>
      */
-    private static void processFeed(String url, String file, SimpleWriter out) {
+    private static void processfeed(String url, String file, SimpleWriter out) {
         XMLTree xml = new XMLTree1(url);
         /*
-         * Ensure given XML document is an RSS 2.0 feed
+         * Ensure given XML document is an RSS 2.0 feeds
          */
         if (xml.label().equals("rss") && xml.hasAttribute("version")
                 && xml.attributeValue("version").equals("2.0")) {
@@ -289,22 +289,58 @@ public final class RSSProcessing {
         SimpleWriter out = new SimpleWriter1L();
 
         /*
-         * Request and store XML URL.
+         * Request and store XML URL and final file name, and create their
+         * respective objects
          */
-        out.print("Enter the URL to a list of RSS 2.0 news feed in XML: ");
+        out.print("Enter the URL to a list of RSS 2.0 news feeds in XML: ");
         String url = in.nextLine();
+        XMLTree feeds = new XMLTree2(url);
 
-        XMLTree feed = new XMLTree2(url);
+        out.print("Enter file name of the index page to create: ");
+        String mainHTML = in.nextLine();
+        SimpleWriter mainHTMLOut = new SimpleWriter1L(mainHTML);
 
-        for (int i = 0; i < feed.numberOfChildren(); i++) {
-            String rssURL = feed.child(i).attributeValue("url");
-            String rssName = feed.child(i).attributeValue("name");
-            String rssFile = feed.child(i).attributeValue("file");
+        /*
+         * Write the required headers to the index page
+         */
+        String feedsTitle = feeds.attributeValue("title");
+        mainHTMLOut.println("<html>");
+        mainHTMLOut.println("  <head>");
+        mainHTMLOut.println("    <title>" + feedsTitle + "</title>");
+        mainHTMLOut.println("  </head>");
+        mainHTMLOut.println("  <body>");
+        mainHTMLOut.println("    <h2>" + feedsTitle + "</h2>");
+        mainHTMLOut.println("    <ul>");
 
-            SimpleWriter htmlOut = new SimpleWriter1L(rssFile);
-            processFeed(rssURL, rssName, htmlOut);
-            htmlOut.close();
+        /*
+         * Loop through the children in the XMLTree provided from the list of
+         * RSS feeds. Process each one of the RSS feeds and output them to their
+         * respective files.
+         */
+        for (int i = 0; i < feeds.numberOfChildren(); i++) {
+            String rssURL = feeds.child(i).attributeValue("url");
+            String rssName = feeds.child(i).attributeValue("name");
+            String rssFile = feeds.child(i).attributeValue("file");
+
+            SimpleWriter rssOut = new SimpleWriter1L(rssFile);
+            processfeed(rssURL, rssName, rssOut);
+            rssOut.close();
+
+            /*
+             * Add references to processed feed to index page
+             */
+            mainHTMLOut.println(
+                    "<li><a href=" + rssFile + ">" + rssName + "</a></li>");
         }
+
+        /*
+         * Close the index page and then the writer for it
+         */
+        mainHTMLOut.println("    </ul>");
+        mainHTMLOut.println("  </body>");
+        mainHTMLOut.println("</html>");
+
+        mainHTMLOut.close();
 
         /*
          * Close I/O streams.
