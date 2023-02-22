@@ -4,6 +4,7 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 import components.xmltree.XMLTree;
 import components.xmltree.XMLTree1;
+import components.xmltree.XMLTree2;
 
 /**
  * This program inputs an XML RSS (version 2.0) feed from a given URL and
@@ -193,8 +194,6 @@ public final class RSSProcessing {
      * </pre>
      */
     private static void processFeed(String url, String file, SimpleWriter out) {
-        XMLTree feeds = new XMLTree1(url);
-
         XMLTree xml = new XMLTree1(url);
         /*
          * Ensure given XML document is an RSS 2.0 feed
@@ -205,10 +204,6 @@ public final class RSSProcessing {
              * Request and store filename for output, then create a SimpleWriter
              * object at that directory.
              */
-            out.print("Enter the name of your html output "
-                    + "(do not include the file extension): ");
-            String htmlDestination = in.nextLine() + ".html";
-            SimpleWriter htmlOut = new SimpleWriter1L(htmlDestination);
 
             /*
              * Extract <channel> element.
@@ -256,7 +251,7 @@ public final class RSSProcessing {
                     + "  <table border=\"1\">" + "\n" + "    <tr>\n"
                     + "      <th>Date</th>\n" + "      <th>Source</th>\n"
                     + "      <th>News</th>\n" + "    </tr>\n";
-            htmlOut.print(htmlHeader);
+            out.print(htmlHeader);
 
             /*
              * Search through all children of channel to find items as there is
@@ -268,22 +263,15 @@ public final class RSSProcessing {
                  * to the HTML
                  */
                 if (channel.child(i).label().equals("item")) {
-                    processItem(channel.child(i), htmlOut);
+                    processItem(channel.child(i), out);
                 }
             }
 
             /*
              * Close initial HTML tags and then the writer
              */
-            htmlOut.print("  </table>\n</body>\n</html>");
-            htmlOut.close();
+            out.print("  </table>\n</body>\n</html>");
 
-            /*
-             * Inform user that the program has completed
-             */
-            out.println("RSS parsed and output at " + htmlDestination);
-        } else {
-            out.println("Not a valid RSS 2.0 feed");
         }
     }
 
@@ -303,14 +291,20 @@ public final class RSSProcessing {
         /*
          * Request and store XML URL.
          */
-        out.print("Enter the URL of an RSS 2.0 news feed: ");
+        out.print("Enter the URL to a list of RSS 2.0 news feed in XML: ");
         String url = in.nextLine();
 
-        /*
-         * Read XML input and initialize XMLTree. If input is not legal XML,
-         * this statement will fail.
-         */
-        XMLTree xml = new XMLTree1(url);
+        XMLTree feed = new XMLTree2(url);
+
+        for (int i = 0; i < feed.numberOfChildren(); i++) {
+            String rssURL = feed.child(i).attributeValue("url");
+            String rssName = feed.child(i).attributeValue("name");
+            String rssFile = feed.child(i).attributeValue("file");
+
+            SimpleWriter htmlOut = new SimpleWriter1L(rssFile);
+            processFeed(rssURL, rssName, htmlOut);
+            htmlOut.close();
+        }
 
         /*
          * Close I/O streams.
