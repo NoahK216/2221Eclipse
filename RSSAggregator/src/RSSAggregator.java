@@ -61,7 +61,7 @@ public final class RSSAggregator {
              * Set indexOfElement to the index of current child if it has the
              * required tag.
              */
-            if (xml.child(i).label().equals(tag)) {
+            if (xml.child(i).isTag() && xml.child(i).label().equals(tag)) {
                 indexOfElement = i;
             }
             i++;
@@ -198,10 +198,6 @@ public final class RSSAggregator {
          */
         if (xml.label().equals("rss") && xml.hasAttribute("version")
                 && xml.attributeValue("version").equals("2.0")) {
-            /*
-             * Request and store filename for output, then create a SimpleWriter
-             * object at that directory.
-             */
 
             /*
              * Extract <channel> element.
@@ -273,7 +269,10 @@ public final class RSSAggregator {
             /*
              * Close initial HTML tags and then the writer
              */
-            out.print("  </table>\n</body>\n</html>");
+            out.println("  </table>");
+            out.println("</body>");
+            out.println("</html>");
+            out.close();
 
         }
     }
@@ -344,6 +343,11 @@ public final class RSSAggregator {
         mainHTMLOut.println("</html>");
 
         mainHTMLOut.close();
+
+        /*
+         * Inform user that the task has completed
+         */
+        out.println("RSS Feeds processed and output at " + mainHTML);
 
         /*
          * Close I/O streams.
