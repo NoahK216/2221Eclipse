@@ -164,16 +164,14 @@ public final class RSSAggregator {
 
         /*
          * Format all of the above into a single 3 wide row comprised of valid
-         * HTML.
+         * HTML. Then write those to the given stream.
          */
-        String htmlRow = ("    <tr>\n" + "       <td>" + pubDate + "</td>\n"
-                + "       <td>" + source + "</td>\n" + "       <td>" + news
-                + "</td>\n" + "    </tr>\n");
+        out.println("    <tr>");
+        out.println("       <td>" + pubDate + "</td>");
+        out.println("       <td>" + source + "</td>");
+        out.println("       <td>" + news + "</td>");
+        out.println("    </tr>");
 
-        /*
-         * Write this table to the given file.
-         */
-        out.print(htmlRow);
     }
 
     /**
@@ -244,14 +242,19 @@ public final class RSSAggregator {
              * Begin HTML file with necessary tags and first table header.
              * Indents 2 spaces wide.
              */
-            String htmlHeader = "<html>\n" + "<head>\n" + "  <title>" + title
-                    + "</title>\n" + "</head>\n" + "<body>\n"
-                    + "  <h1><a href=\"" + link + "\">" + title + "</a></h1>\n"
-                    + "  <p>" + description + "</p>\n"
-                    + "  <table border=\"1\">" + "\n" + "    <tr>\n"
-                    + "      <th>Date</th>\n" + "      <th>Source</th>\n"
-                    + "      <th>News</th>\n" + "    </tr>\n";
-            out.print(htmlHeader);
+            out.println("<html>");
+            out.println("<head>");
+            out.println("  <title>" + title + "</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1><a href=\"" + link + "\">" + title + "</a></h1>");
+            out.println("  <p>" + description + "</p>");
+            out.println("  <table border=\"1\">");
+            out.println("    <tr>");
+            out.println("      <th>Date</th>");
+            out.println("      <th>Source</th>");
+            out.println("      <th>News</th>");
+            out.println("    </tr>");
 
             /*
              * Search through all children of channel to find items as there is
