@@ -267,12 +267,12 @@ public final class RSSAggregator {
             }
 
             /*
-             * Close initial HTML tags and then the writer
+             * Close initial HTML tags but not the writer as it will be used in
+             * other feeds
              */
             out.println("  </table>");
             out.println("</body>");
             out.println("</html>");
-            out.close();
 
         }
     }
@@ -329,8 +329,11 @@ public final class RSSAggregator {
             rssOut.close();
 
             /*
-             * Add references to processed feed to index page
+             * Add references to processed feed to index page, two print
+             * statements are used in order to have proper spacing because
+             * eclipse does not recognize space characters on the next line.
              */
+            mainHTMLOut.print("      ");
             mainHTMLOut.println(
                     "<li><a href=" + rssFile + ">" + rssName + "</a></li>");
         }
