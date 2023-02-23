@@ -92,17 +92,20 @@ public final class RSSAggregator {
         assert out.isOpen() : "Violation of: out.is_open";
 
         /*
-         * If title is present in the item populate the "News" column with it,
-         * otherwise populate it with the item's description
+         * If title or description exist and have a child, fill the table with
+         * that child's value. Otherwise fill the table with
+         * "No title available"
          */
         String news = "No title available";
-        int titleIndex = getChildElement(item, "title");
-        if (titleIndex != -1
-                && item.child(titleIndex).numberOfChildren() == 1) {
-            news = item.child(titleIndex).child(0).label();
-        } else {
-            int descriptionIndex = getChildElement(item, "description");
-            news = item.child(descriptionIndex).child(0).label();
+        if (getChildElement(item, "title") != -1
+                && item.child(getChildElement(item, "title"))
+                        .numberOfChildren() == 1) {
+            news = item.child(getChildElement(item, "title")).child(0).label();
+        } else if (getChildElement(item, "description") != -1
+                && item.child(getChildElement(item, "description"))
+                        .numberOfChildren() == 1) {
+            news = item.child(getChildElement(item, "description")).child(0)
+                    .label();
         }
 
         /*
@@ -320,10 +323,17 @@ public final class RSSAggregator {
          * respective files.
          */
         for (int i = 0; i < feeds.numberOfChildren(); i++) {
+            /*
+             * Read attributes from the current feed element
+             */
             String rssURL = feeds.child(i).attributeValue("url");
             String rssName = feeds.child(i).attributeValue("name");
             String rssFile = feeds.child(i).attributeValue("file");
 
+            /*
+             * Create an out stream to the given file, then process that RSS
+             * feed to that file and close the out stream after.
+             */
             SimpleWriter rssOut = new SimpleWriter1L(rssFile);
             processfeed(rssURL, rssName, rssOut);
             rssOut.close();
