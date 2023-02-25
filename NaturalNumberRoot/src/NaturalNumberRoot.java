@@ -33,30 +33,67 @@ public final class NaturalNumberRoot {
         assert n != null : "Violation of: n is  not null";
         assert r >= 2 : "Violation of: r >= 2";
 
+        // Assign new NaturalNumber variables
         final NaturalNumber one = new NaturalNumber2(1);
-        final NaturalNumber two = new NaturalNumber2(1);
-
+        final NaturalNumber two = new NaturalNumber2(2);
         NaturalNumber lowEnough = new NaturalNumber2(0);
         NaturalNumber tooHigh = new NaturalNumber2(n);
         tooHigh.increment();
 
-        NaturalNumber difference = new NaturalNumber2(tooHigh);
-        difference.subtract(tooHigh);
-
-        while (difference.compareTo(one) != 0) {
-            NaturalNumber middle = new NaturalNumber2(lowEnough);
-            middle.add(tooHigh);
-            middle.divide(two);
-
-            middle.power(r);
-
-            if (middle.compareTo(n) >= 0) {
-                //if (power(middle, r) <= n) {
-                lowEnough.copyFrom(middle);
+        // Create a flag to test whether to continue halving the interval
+        // (until the interval is 1)
+        boolean flag = true;
+        while (flag) {
+            NaturalNumber middle = n.newInstance();
+            /*
+             * Test whether (tooHigh - lowEnough) > 1
+             */
+            if (tooHigh.equals(one)) {
+                flag = false;
             } else {
-                tooHigh.copyFrom(middle);
+                /*
+                 * After testing whether (tooHigh - lowEnough) > 1 at end of
+                 * loop, return tooHigh to original value
+                 */
+                tooHigh.add(lowEnough);
+
+                /*
+                 * To prevent harmful aliasing, use different variable to test
+                 * middle = tooHigh + lowEnough / 2
+                 */
+                middle.add(tooHigh);
+                middle.add(lowEnough);
+                middle.divide(two);
+
+                /*
+                 * Create new variable to test whether middle^r > n
+                 */
+                NaturalNumber power = new NaturalNumber2(middle);
+                power.power(r);
+
+                // if middle^r > n, tooHigh = middle
+                if (power.compareTo(n) > 0) {
+                    tooHigh.copyFrom(middle);
+                } else if (power.compareTo(n) == 0) {
+                    // if middle^r == n, exit loop and return middle
+                    lowEnough.copyFrom(middle);
+                    flag = false;
+                } else {
+                    // if middle^r < n, lowEnough = middle
+                    lowEnough.copyFrom(middle);
+                }
+
+                /*
+                 * test whether (tooHigh - lowEnough) > 1 in the loop again
+                 */
+                tooHigh.subtract(lowEnough);
             }
+
         }
+
+        // return lowest guess to main
+        n.transferFrom(lowEnough);
+
     }
 
     /**

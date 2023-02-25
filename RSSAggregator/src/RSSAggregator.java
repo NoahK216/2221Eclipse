@@ -7,8 +7,9 @@ import components.xmltree.XMLTree1;
 import components.xmltree.XMLTree2;
 
 /**
- * This program inputs an XML RSS (version 2.0) feeds from a given URL and
- * outputs various elements of the feeds to the console.
+ * This program takes a list of a XML RSS (version 2.0) feeds from a given URL
+ * and outputs an html file containing links to other html files comprised of
+ * those feeds' contents.
  *
  * @author Noah Klein
  *
