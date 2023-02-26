@@ -33,67 +33,69 @@ public final class NaturalNumberRoot {
         assert n != null : "Violation of: n is  not null";
         assert r >= 2 : "Violation of: r >= 2";
 
-        // Assign new NaturalNumber variables
+        /*
+         * Create one and two, variables to be used in comparison later.
+         */
         final NaturalNumber one = new NaturalNumber2(1);
         final NaturalNumber two = new NaturalNumber2(2);
+
+        /*
+         * Create lowEnough and tooHigh
+         */
         NaturalNumber lowEnough = new NaturalNumber2(0);
         NaturalNumber tooHigh = new NaturalNumber2(n);
         tooHigh.increment();
 
-        // Create a flag to test whether to continue halving the interval
-        // (until the interval is 1)
-        boolean flag = true;
-        while (flag) {
-            NaturalNumber middle = n.newInstance();
+        /*
+         * Check if [tooHigh - lowEnough == 1]. If this statement is true the
+         * NaturalNumber root of n will be lowEnough. For the first iteration,
+         * only [tooHigh != 1] needs to be confirmed since lowEnough will always
+         * be 0 here. All other iterations will subtract lowEnough from tooHigh
+         * immediately before returning to the check.
+         */
+        while (tooHigh.compareTo(one) != 0) {
+
             /*
-             * Test whether (tooHigh - lowEnough) > 1
+             * Add lowEnough back to tooHigh to put its value where it should be
+             * to find middle.
              */
-            if (tooHigh.equals(one)) {
-                flag = false;
+            tooHigh.add(lowEnough);
+
+            /*
+             * Find the integer average of lowEnough and tooHigh.
+             */
+            NaturalNumber middle = new NaturalNumber2(lowEnough);
+            middle.add(tooHigh);
+            middle.divide(two);
+
+            /*
+             * Store the value of middle^r for comparison while keeping middle
+             * intact.
+             */
+            NaturalNumber raised = new NaturalNumber2(middle);
+            raised.power(r);
+
+            /*
+             * Binary tree search logic. Raise lowEnough to middle if [raised <=
+             * n], and lower tooHigh to middle if not.
+             */
+            if (raised.compareTo(n) <= 0) {
+                lowEnough.copyFrom(middle);
             } else {
-                /*
-                 * After testing whether (tooHigh - lowEnough) > 1 at end of
-                 * loop, return tooHigh to original value
-                 */
-                tooHigh.add(lowEnough);
-
-                /*
-                 * To prevent harmful aliasing, use different variable to test
-                 * middle = tooHigh + lowEnough / 2
-                 */
-                middle.add(tooHigh);
-                middle.add(lowEnough);
-                middle.divide(two);
-
-                /*
-                 * Create new variable to test whether middle^r > n
-                 */
-                NaturalNumber power = new NaturalNumber2(middle);
-                power.power(r);
-
-                // if middle^r > n, tooHigh = middle
-                if (power.compareTo(n) > 0) {
-                    tooHigh.copyFrom(middle);
-                } else if (power.compareTo(n) == 0) {
-                    // if middle^r == n, exit loop and return middle
-                    lowEnough.copyFrom(middle);
-                    flag = false;
-                } else {
-                    // if middle^r < n, lowEnough = middle
-                    lowEnough.copyFrom(middle);
-                }
-
-                /*
-                 * test whether (tooHigh - lowEnough) > 1 in the loop again
-                 */
-                tooHigh.subtract(lowEnough);
+                tooHigh.copyFrom(middle);
             }
 
+            /*
+             * Subtract lowEnough from tooHigh in order to check [tooHigh -
+             * lowEnough != 1] in the next iteration of the while loop.
+             */
+            tooHigh.subtract(lowEnough);
+
         }
-
-        // return lowest guess to main
+        /*
+         * Update n before exiting the method
+         */
         n.transferFrom(lowEnough);
-
     }
 
     /**
