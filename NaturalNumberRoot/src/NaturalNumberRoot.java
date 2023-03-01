@@ -57,7 +57,9 @@ public final class NaturalNumberRoot {
 
             /*
              * Add lowEnough back to tooHigh to put its value where it should be
-             * to find middle.
+             * to find middle. This works because in the first iteration
+             * lowEnough will be zero, and for every other iteration lowEnough
+             * will be subtracted from tooHigh right before this step.
              */
             tooHigh.add(lowEnough);
 
