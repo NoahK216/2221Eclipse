@@ -36,14 +36,19 @@ public final class NaturalNumberRoot {
         /*
          * Create one and two, variables to be used in comparison later.
          */
-        final NaturalNumber one = new NaturalNumber2(1);
-        final NaturalNumber two = new NaturalNumber2(2);
+        NaturalNumber one = n.newInstance();
+        one.increment();
+
+        NaturalNumber two = n.newInstance();
+        two.increment();
+        two.increment();
 
         /*
          * Create lowEnough and tooHigh
          */
-        NaturalNumber lowEnough = new NaturalNumber2(0);
-        NaturalNumber tooHigh = new NaturalNumber2(n);
+        NaturalNumber lowEnough = n.newInstance();
+        NaturalNumber tooHigh = n.newInstance();
+        tooHigh.add(n);
         tooHigh.increment();
 
         /*
@@ -67,7 +72,8 @@ public final class NaturalNumberRoot {
             /*
              * Find the integer average of lowEnough and tooHigh.
              */
-            NaturalNumber middle = new NaturalNumber2(lowEnough);
+            NaturalNumber middle = n.newInstance();
+            middle.add(lowEnough);
             middle.add(tooHigh);
             middle.divide(two);
 
@@ -75,17 +81,19 @@ public final class NaturalNumberRoot {
              * Store the value of middle^r for comparison while keeping middle
              * intact.
              */
-            NaturalNumber raised = new NaturalNumber2(middle);
+            NaturalNumber raised = n.newInstance();
+            raised.add(middle);
             raised.power(r);
 
             /*
              * Binary tree search logic. Raise lowEnough to middle if [raised <=
-             * n], and lower tooHigh to middle if not.
+             * n], and lower tooHigh to middle if not. transferFrom is used here
+             * because middle is not used for the rest of this iteration.
              */
             if (raised.compareTo(n) <= 0) {
-                lowEnough.copyFrom(middle);
+                lowEnough.transferFrom(middle);
             } else {
-                tooHigh.copyFrom(middle);
+                tooHigh.transferFrom(middle);
             }
 
             /*
