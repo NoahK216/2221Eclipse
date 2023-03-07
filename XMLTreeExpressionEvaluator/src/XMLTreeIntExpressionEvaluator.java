@@ -41,7 +41,7 @@ public final class XMLTreeIntExpressionEvaluator {
         int output = 0;
 
         /*
-         * If the current node is a number return it's value as an intIf the
+         * If the current node is a number return its value as an int. If the
          * current node is an operator it must have two child nodes. Evaluate
          * these two child nodes with whatever operator is listed.
          */
